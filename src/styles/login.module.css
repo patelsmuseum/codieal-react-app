@@ -1,3 +1,8 @@
+.loginBox{
+  width: 40vh;
+  margin: auto;
+}
+
 .loginSignupHeader {
     font-weight: 600;
     font-size: 30px;
