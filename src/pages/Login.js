@@ -29,7 +29,7 @@ const Login =()=>{
         const response = await auth.login(email , password);
 
         if(response.success){
-             toast.success('Successfully LOgged In')
+             toast.success('Successfully Logged In')
         }else{
             toast.error('error in Logged in')
         }

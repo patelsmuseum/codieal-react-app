@@ -1,8 +1,14 @@
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 
 import {AuthContext} from '../providers/AuthProvider';
 
-import {login as userLogin} from '../api';
+import {LOCALSTORAGE_TOKEN_KEY} from '../utils/constant'
+
+import {getItemInLocalStorage, removeItemLocalStorage, setItemLocalStorage} from '../utils/index'
+
+import {register, login as userLogin} from '../api';
+
+import {jwtDecode} from 'jwt-decode';
 
 export const useAuth = ()=>{
     return useContext(AuthContext);
@@ -11,12 +17,27 @@ export const useAuth = ()=>{
 export const useProvideAuth = ()=>{
     const [user , setUser] = useState(null);
     const [loading , SetLoading] = useState(true);
+    
+    useEffect(()=>{
+        const userToken = getItemInLocalStorage(LOCALSTORAGE_TOKEN_KEY);
+
+        if(userToken){
+            const user = jwtDecode(userToken);
+
+            setUser(user);
+        }
+
+        SetLoading(false);
+    } , []);
+    
 
     const login = async (email , password) => {
         const response = await userLogin(email , password);
 
         if(response.success){
             setUser(response.data.user);
+            setItemLocalStorage(LOCALSTORAGE_TOKEN_KEY , response.data.token ? response.data.token : null);
+
             return {
                 success: true,
             }
@@ -30,12 +51,29 @@ export const useProvideAuth = ()=>{
 
     const logout = ()=>{
         setUser(null);
+        removeItemLocalStorage(LOCALSTORAGE_TOKEN_KEY);
+    }
+
+    const signup =async (name , email , password , confirmPassword)=>{
+        const response = await register(name , email , password , confirmPassword);
+
+        if(response.success){
+            return{
+                success : true
+            };
+        }else{
+            return {
+                success : false,
+                message : response.message,
+            };
+        }
     }
 
     return {
         user,
         loading,
         logout,
-        login
+        login,
+        signup
     }
 }
