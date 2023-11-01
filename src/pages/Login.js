@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {login} from '../api/index'
 
 import { useAuth } from '../hooks';
+import { Navigate } from 'react-router-dom';
 
 
 
@@ -35,6 +36,10 @@ const Login =()=>{
         }
 
         setLogginin(false);
+    }
+
+    if(auth.user){
+        return <Navigate to="/"></Navigate>
     }
 
     return (

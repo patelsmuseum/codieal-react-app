@@ -6,7 +6,7 @@ import {LOCALSTORAGE_TOKEN_KEY} from '../utils/constant'
 
 import {getItemInLocalStorage, removeItemLocalStorage, setItemLocalStorage} from '../utils/index'
 
-import {register, login as userLogin} from '../api';
+import {register, login as userLogin , editProfile} from '../api';
 
 import {jwtDecode} from 'jwt-decode';
 
@@ -29,6 +29,28 @@ export const useProvideAuth = ()=>{
 
         SetLoading(false);
     } , []);
+
+    const updateUser = async (userId, name, password, confirmPassword) => {
+        const response = await editProfile(userId, name, password, confirmPassword);
+        if (response.success) {
+          setUser(response.data.user);
+          // first delete the old token
+          removeItemLocalStorage(LOCALSTORAGE_TOKEN_KEY);
+          // set the updated token to update data in localStorage as well
+          setItemLocalStorage(
+            LOCALSTORAGE_TOKEN_KEY,
+            response.data.token ? response.data.token : null
+          );
+          return {
+            success: true,
+          };
+        } else {
+          return {
+            success: false,
+            message: response.message,
+          };
+        }
+      };
     
 
     const login = async (email , password) => {
@@ -74,6 +96,7 @@ export const useProvideAuth = ()=>{
         loading,
         logout,
         login,
-        signup
+        signup,
+        updateUser
     }
 }
