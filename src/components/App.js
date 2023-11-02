@@ -1,6 +1,6 @@
 import { useEffect , useState} from "react";
 import {getPosts} from '../api/index'
-import {Home, Signup , Settings} from '../pages'
+import {Home, Signup , Settings , UserProfile} from '../pages'
 import {Loader} from './index'
 import {Navbar}  from './index';
 import {Login} from '../pages';
@@ -69,6 +69,10 @@ function App() {
 
             <Route element={<PrivateRoute/>}>
                 <Route path="/settings" element={<Settings/>} />
+            </Route>
+
+            <Route element={<PrivateRoute/>}>
+                <Route path="/user/:userId" element={<UserProfile/>} />
             </Route>
             
 
