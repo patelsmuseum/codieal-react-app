@@ -46,11 +46,11 @@ const customFetch = async (url , {body , ...customConfig}) =>{
     }
 }
 
-export const getPosts = (page=1 , limit=5) =>{
-    return customFetch(API_URLS.posts(page , limit), {
-        method :'GET',
+export const getPosts = (page = 1, limit = 50) => {
+    return customFetch(API_URLS.posts(page, limit), {
+      method: 'GET',
     });
-}
+};
 
 export const login = (email , password) =>{
     return customFetch(API_URLS.login() ,{
@@ -100,5 +100,31 @@ export const addFriend = (userId) => {
 export const removeFriend = (userId) => {
     return customFetch(API_URLS.removeFriend(userId), {
       method: 'POST',
+    });
+};
+
+export const addPost = (content) => {
+    return customFetch(API_URLS.createPost(), {
+      method: 'POST',
+      body: {
+        content,
+      },
+    });
+};
+
+
+export const createComment = (content, postId) => {
+    return customFetch(API_URLS.comment(), {
+      method: 'POST',
+      body: {
+        post_id: postId,
+        content,
+      },
+    });
+};
+
+export const toggleLike = (itemId, itemType) => {
+    return customFetch(API_URLS.toggleLike(itemId, itemType), {
+        method: 'POST',
     });
 };

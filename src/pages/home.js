@@ -1,45 +1,42 @@
-import { useEffect, useState } from 'react'
-import styles from '../styles/home.module.css'
-import PropTypes from 'prop-types'
+import { Post, Loader, FriendsList, CreatePost } from '../components';
+import styles from '../styles/home.module.css';
+import { useAuth, usePosts } from '../hooks';
+import { useState , useEffect } from 'react';
+
 import { getPosts } from '../api';
-import { Loader } from '../components';
 
-const Home = () =>{
+const Home = () => {
+  const auth = useAuth();
+   const posts = usePosts();
+    console.log('here');
 
-    const [posts , setPosts] = useState([]);
-    const [loading , setLoading] = useState([]);
+  // While fetching the data
+     console.log(posts);
+  if (posts.loading) {
+    return <Loader />;
+  }
 
-    useEffect(()=>{
-        const fetchPosts = async ()=>{
-            const response = await getPosts();
+    
+    
 
-            if(response.success){
-                setPosts(response.data.posts);
-            }
+  return (
+    <div className={styles.home}>
+      <div className={styles.postsList}>
+        {auth.user && <CreatePost />}
+        {/* mapping the array of post which we have recieve as props so we also need key and we have passed that as post._id*/}
+        {posts.data.map((post) => (
+          <Post post={post} key={`post-${post._id}`} />
+          
+        ))}
+      </div>
+      {auth.user && <FriendsList />}
+    </div>
+  );
+};
 
-            setLoading(false);
-        };
-
-        fetchPosts();
-    } , []);
-
-    if(loading){
-        return <Loader/>;
-    }
-
-
-    {console.log(posts)}
-    return(
-        <div className={styles.postWrapper}>
-                <p>Helo from home </p>
-                {console.log(posts[0].content)}
-                <p>{posts[1].content}</p>
-        </div>
-    )
-}
-
-// Home.propTypes ={
-//     posts : PropTypes.array.isRequired
-// }
+// // this will check if the props is array or not
+// Home.propTypes = {
+//   posts: PropsTypes.array.isRequired,
+// };
 
 export default Home;

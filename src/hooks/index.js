@@ -1,12 +1,14 @@
 import { useContext, useEffect, useState } from "react"
 
 import {AuthContext} from '../providers/AuthProvider';
+import {PostsContext } from "../providers/PostProvider";
+
 
 import {LOCALSTORAGE_TOKEN_KEY} from '../utils/constant'
 
 import {getItemInLocalStorage, removeItemLocalStorage, setItemLocalStorage} from '../utils/index'
 
-import {register, login as userLogin , editProfile} from '../api';
+import {register, login as userLogin , editProfile , getPosts} from '../api';
 
 import {jwtDecode} from 'jwt-decode';
 
@@ -100,3 +102,51 @@ export const useProvideAuth = ()=>{
         updateUser
     }
 }
+
+export const usePosts = () => {
+    return useContext(PostsContext);
+};
+  
+export const useProvidePosts = () => {
+    const [posts, setPosts] = useState(null);
+    const [loading, setLoading] = useState(true);
+  
+    // this will fetch the data from the API call
+    const fetchPosts = async () => {
+      const response = await getPosts();
+      console.log('response' ,response);
+  
+      if (response.success) {
+        setPosts(response.data.posts);
+      }
+  
+      setLoading(false);
+    };
+    // set the data
+    useEffect(() => {
+      fetchPosts();
+    }, []);
+  
+    const addPostToState = (post) => {
+      const newPost = [post, ...posts];
+      setPosts(newPost);
+    };
+  
+    const addComment = (comment, postId) => {
+      const newPosts = posts.map((post) => {
+        if (post._id === postId) {
+          return { ...post, comments: [...post.comments, comment] };
+        }
+        return post;
+      });
+  
+      setPosts(newPosts);
+    };
+  
+    return {
+      data: posts,
+      loading,
+      addPostToState,
+      addComment,
+    };
+};
